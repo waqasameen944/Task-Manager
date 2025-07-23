@@ -103,7 +103,32 @@ export const deleteTask = async (req, res, next) => {
 };
 
 // GET /api/tasks/due-today
-export const getTaskByDueDate = async (req, res, next) => {};
+export const getTaskByDueDate = async (req, res, next) => {
+  try {
+    const today = new Date();
+
+    //start of the today
+    const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+
+    //end of the today
+    const endOfDay = new Date(today.setHours(23, 59, 59, 999));
+
+    const task = await Task.find({
+      dueDate: {
+        $gte: startOfDay,
+        $lt: endOfDay,
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      Count: task.length,
+      task,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 // GET /api/tasks?start=2025-07-01&end=2025-07-31
 export const getTaskBetweenDate = async (req, res, next) => {};
