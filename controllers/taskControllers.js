@@ -102,28 +102,37 @@ export const deleteTask = async (req, res, next) => {
   }
 };
 
-// GET /api/tasks/due-today
+// GET /api/tasks/due/:date
 export const getTaskByDueDate = async (req, res, next) => {
   try {
-    const today = new Date();
+    const { date } = req.params;
 
-    //start of the today
-    const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+    if (!date) {
+      return next(new ErrorHandler("Date is required", 400));
+    }
 
-    //end of the today
-    const endOfDay = new Date(today.setHours(23, 59, 59, 999));
+    const selectedDate = new Date(date);
+    if (isNaN(selectedDate.getTime())) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid date format. Use YYYY-MM-DD",
+      });
+    }
 
-    const task = await Task.find({
+    const startOfDay = new Date(selectedDate.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(selectedDate.setHours(23, 59, 59, 999));
+
+    const tasks = await Task.find({
       dueDate: {
         $gte: startOfDay,
-        $lt: endOfDay,
+        $lte: endOfDay,
       },
     });
 
     res.status(200).json({
       success: true,
-      Count: task.length,
-      task,
+      count: tasks.length,
+      tasks,
     });
   } catch (error) {
     next(error);

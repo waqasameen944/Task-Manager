@@ -33,7 +33,7 @@ router.put("/updateTask/:id", checkMongoId, validationResult, updateTask);
 router.delete("/deleteTask/:id", checkMongoId, validationResult, deleteTask);
 
 // GET /api/tasks/due-today
-router.get("/getTaskByDueDate", getTaskByDueDate);
+router.get("/getTaskByDueDate/:date", getTaskByDueDate);
 
 // GET /api/tasks?start=2025-07-01&end=2025-07-31
 router.get("/getTaskBetweenDate", getTaskBetweenDate);
